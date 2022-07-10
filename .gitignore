@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# pyqt
+.qt_for_python
+
+# user config
+config
