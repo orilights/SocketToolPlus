@@ -132,4 +132,8 @@ dmypy.json
 .qt_for_python
 
 # user config
-config
+/config
+
+# nuitka
+*.build/
+*.dist/
