@@ -1,9 +1,13 @@
-import sys
+import os, sys
 
-from server import server
+from modules.config import Settings, Template
+from modules.server import ServerMgr
+from modules.client import ClientMgr
 
 from GUI import *
 
+ROOT_PATH = os.path.dirname((os.path.abspath(__file__)))
+LOCALHOST = '127.0.0.1'
 
 
 # 主窗口信号
@@ -21,13 +25,15 @@ class MainWindow(QMainWindow):
 
         self.sig = MainWindowSignal()
 
+        self.servers = {}
+        self.clients = {}
+
         self.setWindowIcon(QIcon('./assets/icon/servertool.png'))
 
         # 初始化信号槽
         self.ui.btn_recvclear.clicked.connect(self.ui.text_recv.clear)
         self.ui.btn_sendclear.clicked.connect(self.ui.text_send.clear)
         self.ui.spinbox_fontsize.valueChanged.connect(self.resize_text)
-
 
         # 初始化树视图
         self.ui.tree_main.setHeaderLabels(['Service', 'Status'])
