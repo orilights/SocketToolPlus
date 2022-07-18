@@ -2,12 +2,8 @@ import sys
 
 from server import server
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from GUI import *
 
-sys.path.append("gui\\guic")
-from ui_MainWindow import Ui_MainWindow
 
 
 # 主窗口信号
@@ -49,23 +45,22 @@ class MainWindow(QMainWindow):
     # 创建示例数据
     def create_sample(self):
         server1 = QTreeWidgetItem(self.tree_servers)
-        server1.setText(0, '127.0.0.1:2333')
+        server1.setText(0, f'{LOCALHOST}:2333')
         server1.setText(1, '已停止')
 
         client1 = QTreeWidgetItem(self.tree_clients)
-        client1.setText(0, '127.0.0.1:4567')
+        client1.setText(0, f'{LOCALHOST}:4567')
         client1.setText(1, '运行中')
 
         client2 = QTreeWidgetItem(self.tree_clients)
-        client2.setText(0, '127.0.0.1:4568')
+        client2.setText(0, f'{LOCALHOST}:4568')
         client2.setText(1, '已停止')
 
     def resize_text(self):
         fontsize = self.ui.spinbox_fontsize.value()
-        self.ui.text_send.setFont(
-            QFont('Microsoft YaHei UI', fontsize, -1, False))
-        self.ui.text_recv.setFont(
-            QFont('Microsoft YaHei UI', fontsize, -1, False))
+        newfont = QFont('Microsoft YaHei UI', fontsize, -1, False)
+        self.ui.text_send.setFont(newfont)
+        self.ui.text_recv.setFont(newfont)
 
 
 if __name__ == '__main__':
