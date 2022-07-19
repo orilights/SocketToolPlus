@@ -1,4 +1,4 @@
-# ServerTool
+# SocketToolPlus
 
 ## Install Requirements
 
@@ -9,5 +9,5 @@ pip install -r requirements.txt
 ## Usage
 
 ```python
-python ServerTool.py
+python SocketToolPlus.py
 ```

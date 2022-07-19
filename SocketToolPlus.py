@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
         self.servers = {}
         self.clients = {}
 
-        self.setWindowIcon(QIcon('./assets/icon/servertool.png'))
+        self.setWindowIcon(QIcon('./assets/icon/icon.png'))
 
         # 初始化信号槽
         self.ui.btn_recvclear.clicked.connect(self.ui.text_recv.clear)

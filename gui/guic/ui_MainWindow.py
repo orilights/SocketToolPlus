@@ -187,7 +187,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"ServerTool Beta", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"SocketToolPlus Beta", None))
         self.btn_create.setText(QCoreApplication.translate("MainWindow", u"\u521b\u5efa", None))
         self.btn_delete.setText(QCoreApplication.translate("MainWindow", u"\u5220\u9664", None))
         self.btn_recvclear.setText(QCoreApplication.translate("MainWindow", u"\u6e05\u9664", None))
