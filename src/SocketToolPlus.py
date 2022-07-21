@@ -4,7 +4,7 @@ from modules.config import Settings, Template
 from modules.server import ServerMgr
 from modules.client import ClientMgr
 
-from GUI import *
+from QtConfig import *
 
 ROOT_PATH = os.path.dirname((os.path.abspath(__file__)))
 LOCALHOST = '127.0.0.1'

@@ -168,6 +168,64 @@
           <property name="title">
            <string>Socket 状态</string>
           </property>
+          <widget class="QLabel" name="label_v_status">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>20</y>
+             <width>81</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>已关闭</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="btn_socket_start">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>50</y>
+             <width>75</width>
+             <height>24</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>开启</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="btn_socket_stop">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="geometry">
+            <rect>
+             <x>100</x>
+             <y>50</y>
+             <width>75</width>
+             <height>24</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>关闭</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label">
+           <property name="geometry">
+            <rect>
+             <x>220</x>
+             <y>50</y>
+             <width>111</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>本地端口：</string>
+           </property>
+          </widget>
          </widget>
         </item>
         <item>
