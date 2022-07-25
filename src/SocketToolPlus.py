@@ -17,6 +17,7 @@ class MainWindowSignal(QObject):
     server_conn_recv = Signal(str, str)
     server_thread_end = Signal(str)
     server_conn_close = Signal(str, str)
+    client_thread_end = Signal(str)
     new_msgbox_warning = Signal(str, str)
     new_server = Signal(str)
     new_client = Signal(str)
