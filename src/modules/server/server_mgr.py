@@ -17,7 +17,7 @@ class ServerMgr(dict):
         if Utils.is_port_used(port):
             self.signal.new_msgbox_warning.emit('错误', f'端口{port}已被其他程序占用，服务器创建失败。')
             return -1
-        self.signal.new_server.emit(str(port))
+        self.signal.new_server.emit(str(port), str(port))
         self[str(port)] = ServerThread(port, server_type, self.signal)
         self[str(port)].start()
 

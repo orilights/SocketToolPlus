@@ -30,7 +30,7 @@
     <item>
      <layout class="QHBoxLayout" name="layout_h_ctrlbox">
       <item>
-       <widget class="QPushButton" name="btn_create">
+       <widget class="QPushButton" name="btn_socket_create">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -52,7 +52,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_delete">
+       <widget class="QPushButton" name="btn_socket_delete">
         <property name="maximumSize">
          <size>
           <width>80</width>
@@ -131,11 +131,26 @@
           <height>16777215</height>
          </size>
         </property>
-        <property name="columnCount">
-         <number>2</number>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
         </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="animated">
+         <bool>false</bool>
+        </property>
+        <property name="columnCount">
+         <number>3</number>
+        </property>
+        <attribute name="headerMinimumSectionSize">
+         <number>0</number>
+        </attribute>
         <attribute name="headerDefaultSectionSize">
          <number>200</number>
+        </attribute>
+        <attribute name="headerStretchLastSection">
+         <bool>true</bool>
         </attribute>
         <column>
          <property name="text">
@@ -145,6 +160,11 @@
         <column>
          <property name="text">
           <string notr="true">2</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">3</string>
          </property>
         </column>
        </widget>
@@ -218,7 +238,7 @@
             <rect>
              <x>220</x>
              <y>50</y>
-             <width>111</width>
+             <width>241</width>
              <height>21</height>
             </rect>
            </property>
@@ -231,12 +251,12 @@
             <rect>
              <x>220</x>
              <y>20</y>
-             <width>111</width>
+             <width>241</width>
              <height>21</height>
             </rect>
            </property>
            <property name="text">
-            <string>远程端口：</string>
+            <string>远程地址：</string>
            </property>
           </widget>
          </widget>
@@ -325,7 +345,25 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>菜单</string>
+    </property>
+    <addaction name="action_setting"/>
+    <addaction name="action_about"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
+  <action name="action_setting">
+   <property name="text">
+    <string>设置</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>关于</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
