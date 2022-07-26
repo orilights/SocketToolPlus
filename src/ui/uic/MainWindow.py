@@ -29,8 +29,8 @@ class Ui_MainWindow(object):
         MainWindow.resize(800, 600)
         MainWindow.setMinimumSize(QSize(800, 600))
         MainWindow.setMaximumSize(QSize(16777215, 16777215))
-        self.action_setting = QAction(MainWindow)
-        self.action_setting.setObjectName(u"action_setting")
+        self.action_settings = QAction(MainWindow)
+        self.action_settings.setObjectName(u"action_settings")
         self.action_about = QAction(MainWindow)
         self.action_about.setObjectName(u"action_about")
         self.centralwidget = QWidget(MainWindow)
@@ -212,7 +212,7 @@ class Ui_MainWindow(object):
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.menu.menuAction())
-        self.menu.addAction(self.action_setting)
+        self.menu.addAction(self.action_settings)
         self.menu.addAction(self.action_about)
 
         self.retranslateUi(MainWindow)
@@ -222,7 +222,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"SocketToolPlus Beta", None))
-        self.action_setting.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
+        self.action_settings.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.action_about.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
         self.btn_socket_create.setText(QCoreApplication.translate("MainWindow", u"\u521b\u5efa", None))
         self.btn_socket_delete.setText(QCoreApplication.translate("MainWindow", u"\u5220\u9664", None))
