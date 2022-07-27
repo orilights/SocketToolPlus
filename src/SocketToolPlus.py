@@ -1,4 +1,4 @@
-import os, sys, datetime
+import sys, datetime
 
 from modules.config import Settings, Template
 from modules.server import ServerMgr
