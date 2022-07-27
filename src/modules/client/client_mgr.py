@@ -10,7 +10,7 @@ class ClientMgr(dict):
         self.no = 1
 
     def new_client(self, server_addr, init=True, server_type='tcp'):
-        self.signal.new_client.emit(f'{server_addr[0]} : {server_addr[1]}', 'c' + str(self.no))
+        self.signal.new_client.emit(f'{server_addr[0]}:{server_addr[1]}', 'c' + str(self.no))
         self['c' + str(self.no)] = ClientThread(server_addr, server_type, self.signal, 'c' + str(self.no))
         self['c' + str(self.no)].start()
         self.no = self.no + 1

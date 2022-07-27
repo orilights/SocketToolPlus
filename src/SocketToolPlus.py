@@ -1,18 +1,12 @@
-import os, sys
-from sqlite3 import connect
-from tkinter import dialog
+import os, sys, datetime
 
 from modules.config import Settings, Template
 from modules.server import ServerMgr
 from modules.client import ClientMgr
 from modules.utils import Utils
 
+from Global import *
 from QtConfig import *
-
-ROOT_PATH = os.path.dirname((os.path.abspath(__file__)))
-LOCALHOST = '127.0.0.1'
-VERSION_STR = '1.0.0 Beta'
-VERSION_NO = '10000000'
 
 
 # 主窗口信号
@@ -21,17 +15,16 @@ class MainWindowSignal(QObject):
     new_server = Signal(str, str)  # display, flag
     server_listen_success = Signal(str)  # port
     server_conn_made = Signal(str)  # port
-    server_conn_recv = Signal(str)  # port
     server_conn_close = Signal(str)  # port
     server_thread_end = Signal(str)  # port
 
     # client signal
     new_client = Signal(str, str)  # display, flag
     client_conn_made = Signal(str)  # name
-    client_conn_recv = Signal(str)  # name
     client_thread_end = Signal(str)  # name
 
     # other signal
+    socket_log_add = Signal(str, str, str)  # flag, type, msg
     new_msgbox_warning = Signal(str, str)  # title, msg
 
 
@@ -47,6 +40,7 @@ class MainWindow(QMainWindow):
 
         self.servers = ServerMgr(self.sig)
         self.clients = ClientMgr(self.sig)
+        self.log = {}
         self.current_display = [-1, '', None]
 
         self.setWindowIcon(QIcon(f'{ROOT_PATH}/assets/icon/icon.png'))
@@ -55,22 +49,24 @@ class MainWindow(QMainWindow):
         self.sig.new_server.connect(self.handle_tree_new_server)
         self.sig.server_listen_success.connect(self.handle_server_info_update)
         self.sig.server_conn_made.connect(self.handle_server_info_update)
-        self.sig.server_conn_recv.connect(self.handle_socket_recv_update)
         self.sig.server_conn_close.connect(self.handle_server_info_update)
         self.sig.server_thread_end.connect(self.handle_server_thread_end)
 
         self.sig.new_client.connect(self.handle_tree_new_client)
         self.sig.client_conn_made.connect(self.handle_client_info_update)
-        self.sig.client_conn_recv.connect(self.handle_socket_recv_update)
         self.sig.client_thread_end.connect(self.handle_client_thread_end)
 
+        self.sig.socket_log_add.connect(self.handle_socket_log_add)
         self.sig.new_msgbox_warning.connect(self.pop_msgbox_warning)
 
         self.ui.btn_socket_create.clicked.connect(self.btnclick_socket_create)
         self.ui.btn_socket_start.clicked.connect(self.btnclick_socket_start)
         self.ui.btn_socket_stop.clicked.connect(self.btnclick_socket_stop)
-        self.ui.btn_recvclear.clicked.connect(self.ui.text_recv.clear)
+        self.ui.btn_socket_send.clicked.connect(self.btnclick_socket_send)
+        self.ui.btn_recvclear.clicked.connect(self.handle_socket_log_clear)
         self.ui.btn_sendclear.clicked.connect(self.ui.text_send.clear)
+        self.ui.btn_template_save.clicked.connect(self.btnclick_template_save)
+        self.ui.btn_template_read.clicked.connect(self.btnclick_template_read)
         self.ui.spinbox_fontsize.valueChanged.connect(self.resize_text)
         self.ui.tree_main.currentItemChanged.connect(self.handle_tree_item_change)
 
@@ -79,8 +75,8 @@ class MainWindow(QMainWindow):
         # 初始化树视图
         self.ui.tree_main.setHeaderLabels(['display', 'status', 'flag'])
         self.ui.tree_main.setHeaderHidden(True)
-        self.ui.tree_main.setColumnWidth(0, 240)
-        self.ui.tree_main.setColumnWidth(1, 50)
+        self.ui.tree_main.setColumnWidth(0, 230)
+        self.ui.tree_main.setColumnWidth(1, 60)
         self.ui.tree_main.setColumnWidth(2, 0)
         self.tree_servers = QTreeWidgetItem(self.ui.tree_main)
         self.tree_servers.setText(0, 'Server')
@@ -94,16 +90,26 @@ class MainWindow(QMainWindow):
 
     # 创建示例数据
     def create_sample(self):
-        self.servers.new_server(11238)
+        self.servers.new_server(61234)
         self.servers.new_server(60000)
 
-        self.clients.new_client(('127.0.0.1', 11238))
+        self.clients.new_client(('127.0.0.1', 60000))
+        self.clients.new_client(('127.0.0.1', 60000))
+        self.clients.new_client(('127.0.0.1', 60000))
+        self.clients.new_client(('127.0.0.1', 60000))
+        self.clients.new_client(('127.0.0.1', 60000))
+        self.clients.new_client(('127.0.0.1', 60000))
 
     def resize_text(self):
         fontsize = self.ui.spinbox_fontsize.value()
         newfont = QFont('Microsoft YaHei UI', fontsize, -1, False)
         self.ui.text_send.setFont(newfont)
         self.ui.text_recv.setFont(newfont)
+
+    def scroll_recvtext_to_bottom(self):
+        cursor = self.ui.text_recv.textCursor()
+        cursor.setPosition(len(self.ui.text_recv.toPlainText()))
+        self.ui.text_recv.setTextCursor(cursor)
 
     def pop_msgbox_warning(self, title, msg):
         QMessageBox.warning(self, title, msg)
@@ -128,7 +134,7 @@ class MainWindow(QMainWindow):
 
     def handle_tree_new_server(self, server_port, flag):
         new_server = QTreeWidgetItem(self.tree_servers)
-        new_server.setText(0, f'{LOCALHOST} : {server_port}')
+        new_server.setText(0, f'{LOCALHOST}:{server_port}')
         new_server.setText(1, '已停止')
         new_server.setText(2, flag)
         print(f'tree add server {server_port}')
@@ -155,11 +161,11 @@ class MainWindow(QMainWindow):
                 self.current_display[2].setText(1, '已停止')
                 self.ui.btn_socket_start.setEnabled(True)
                 self.ui.btn_socket_stop.setEnabled(False)
-
             self.ui.label_v_localport.setText(f'本地端口：{self.current_display[1]}')
+            self.ui.text_recv.setPlainText(self.log.get(self.current_display[1], ''))
+            self.scroll_recvtext_to_bottom()
             try:
                 self.ui.label_v_remoteport.setText(f'连接数量：{len(server.server.clients)}')
-                self.ui.text_recv.setPlainText(server.server.recv_log)
             except:
                 pass
         elif self.current_display[0] == 1:  # client
@@ -176,25 +182,29 @@ class MainWindow(QMainWindow):
                 self.current_display[2].setText(1, '已断开')
                 self.ui.btn_socket_start.setEnabled(True)
                 self.ui.btn_socket_stop.setEnabled(False)
+            self.ui.text_recv.setPlainText(self.log.get(self.current_display[1], ''))
+            self.scroll_recvtext_to_bottom()
             try:
                 self.ui.label_v_remoteport.setText(f'远程地址：{client.server_addr[0]}:{client.server_addr[1]}')
                 self.ui.label_v_localport.setText(f'本地端口：{client.client.local_port}')
             except:
                 pass
 
-    def handle_socket_recv_update(self, flag):
-        if self.current_display[0] == 0 and self.current_display[1] == flag:
-            server = self.servers.get(flag)
-            try:
-                self.ui.text_recv.setPlainText(server.server.recv_log)
-            except:
-                pass
-        if self.current_display[0] == 1 and self.current_display[1] == flag:
-            client = self.clients.get(flag)
-            try:
-                self.ui.text_recv.setPlainText(client.client.recv_log)
-            except:
-                pass
+    def handle_socket_log_add(self, flag, type, msg):
+        log = self.log.get(flag, '')
+        time = datetime.datetime.now().strftime(f"%H:%M:%S")
+        if msg == '':
+            log = log + f'[{time}] [{type}]\n'
+        else:
+            log = log + f'[{time}] [{type}] => \'{msg}\'\n'
+        self.log[flag] = log
+        if self.current_display[1] == flag:
+            self.ui.text_recv.setPlainText(log)
+            self.scroll_recvtext_to_bottom()
+
+    def handle_socket_log_clear(self):
+        del self.log[self.current_display[1]]
+        self.ui.text_recv.clear()
 
     def handle_socket_create(self, type: int, address: str, port: str):
         if type == 0:
@@ -248,7 +258,7 @@ class MainWindow(QMainWindow):
         if self.current_display[0] == 0:
             self.ui.btn_socket_start.setEnabled(False)
             self.servers.run_server(int(self.current_display[1]))
-        else:
+        elif self.current_display[0] == 1:
             self.ui.btn_socket_start.setEnabled(False)
             self.clients.run_client(self.current_display[1])
 
@@ -256,9 +266,46 @@ class MainWindow(QMainWindow):
         if self.current_display[0] == 0:
             self.ui.btn_socket_stop.setEnabled(False)
             self.servers.stop_server(int(self.current_display[1]))
-        else:
+        elif self.current_display[0] == 1:
             self.ui.btn_socket_stop.setEnabled(False)
             self.clients.stop_client(self.current_display[1])
+
+    def btnclick_socket_send(self):
+        if self.current_display[0] == 0:
+            if not self.servers.get(self.current_display[1]).isRunning():
+                QMessageBox.warning(self, '错误', '服务器未在运行。', QMessageBox.Ok)
+                return -1
+            if self.ui.text_send.toPlainText() == '':
+                QMessageBox.warning(self, '错误', '请输入要发发送的内容。', QMessageBox.Ok)
+                return -1
+
+        elif self.current_display[0] == 1:
+            client = self.clients.get(self.current_display[1])
+            if client is None:
+                return -1
+            if not client.isRunning():
+                QMessageBox.warning(self, '错误', '未连接到服务器。', QMessageBox.Ok)
+                return -1
+            if self.ui.text_send.toPlainText() == '':
+                QMessageBox.warning(self, '错误', '请输入要发发送的内容。', QMessageBox.Ok)
+                return -1
+            self.handle_socket_log_add(self.current_display[1], '发送数据', self.ui.text_send.toPlainText())
+            try:
+                client.client.client_socket.send(self.ui.text_send.toPlainText().encode(ENCODING_SOCKET))
+            except Exception as e:
+                print('send failed', e)
+
+    def btnclick_template_save(self):
+        dialog = Dialog_SelectTemplate(self, 1, self.ui.text_send.toPlainText())
+        dialog.show()
+
+    def btnclick_template_read(self):
+        dialog = Dialog_SelectTemplate(self, 2, '')
+        dialog.show()
+        dialog._signal.connect(self.ui.text_send.setPlainText)
+
+    def btnclick_text_format(self):
+        ...
 
     def act_dialog_about_open(self):
         dialog = Dialog_About(self)
@@ -330,6 +377,57 @@ class Dialog_CreateSocket(QDialog):
             self._signal.emit(1, self.ui.edit_address.text(), self.ui.edit_port.text())
 
         self.close()
+
+
+class Dialog_SelectTemplate(QDialog):
+    _signal = Signal(str)
+
+    def __init__(self, parent, mode, content) -> None:
+        super().__init__(parent)
+        self.ui = Ui_Dialog_SelectTemplate()
+        self.ui.setupUi(self)
+
+        self.mode = mode
+        self.content = content
+        self.templates = Template()
+
+        self.ui.btn_select.clicked.connect(self.btnclick_select)
+        self.ui.btn_new.clicked.connect(self.btnclick_new)
+        self.ui.btn_delete.clicked.connect(self.btnclick_delete)
+
+        self.ui.list_template.addItems(self.templates.list())
+
+    def btnclick_select(self):
+        if not len(self.ui.list_template.selectedItems()) > 0:
+            return -1
+        if self.mode == 1:  # 保存
+            self.templates.set(self.ui.list_template.selectedItems()[0].text(), self.content)
+            self.close()
+        elif self.mode == 2:  # 读取
+            self._signal.emit(self.templates.get(self.ui.list_template.selectedItems()[0].text()))
+            self.close()
+
+    def btnclick_new(self):
+        result = QInputDialog.getText(self, '请输入模板名称', '模板名：', QLineEdit.Normal, '模板')
+        if not result[1]:
+            return -1
+        if result[0] == '':
+            QMessageBox.warning(self, '错误', '请输入合法名称。', QMessageBox.Ok)
+            return -1
+        if result[0] in self.templates.list():
+            QMessageBox.warning(self, '错误', '已存在同名模板。', QMessageBox.Ok)
+            return -1
+        self.templates.set(result[0], '')
+        self.ui.list_template.clear()
+        self.ui.list_template.addItems(self.templates.list())
+
+    def btnclick_delete(self):
+        if not len(self.ui.list_template.selectedItems()) > 0:
+            QMessageBox.warning(self, '错误', '请选择要删除的模板。', QMessageBox.Ok)
+            return -1
+        self.templates.delete(self.ui.list_template.selectedItems()[0].text())
+        self.ui.list_template.clear()
+        self.ui.list_template.addItems(self.templates.list())
 
 
 if __name__ == '__main__':

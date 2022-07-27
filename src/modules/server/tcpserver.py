@@ -1,6 +1,6 @@
-import socket, threading, datetime
+import socket, threading
 
-ENCODING_SET = 'gb18030'
+from Global import *
 
 
 class TCPServer:
@@ -13,11 +13,18 @@ class TCPServer:
         self.recv_log = ''
         self.server_socket = None
 
+    def log(self, title, msg: str = None):
+        if msg == None:
+            self.signal.socket_log_add.emit(str(self.port), title, '')
+        else:
+            self.signal.socket_log_add.emit(str(self.port), title, msg)
+
     def run(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # 立即释放端口
         self.server_socket.bind(('', self.port))
         self.server_socket.listen(100)
+        self.log('开始监听')
         self.signal.server_listen_success.emit(str(self.port))
         while self.flag_running:
             try:
@@ -29,7 +36,7 @@ class TCPServer:
                 pass
 
     def client_handle(self, client_socket: socket.socket, client_addr):
-        print(f'conn made, {client_addr}')
+        self.log('建立连接', f'{client_addr[0]}:{client_addr[1]}')
         self.signal.server_conn_made.emit(str(self.port))
         self.clients[client_addr[1]] = client_socket
         while self.flag_running:
@@ -41,9 +48,7 @@ class TCPServer:
                 self.signal.server_conn_close.emit(str(self.port))
                 break
             if recv_data:
-                time = datetime.datetime.now()
-                self.recv_log = self.recv_log + f'{time.strftime(f"[%H:%M:%S]")} [{client_addr[0]}:{client_addr[1]}] => {recv_data.decode(ENCODING_SET)}\n'
-                self.signal.server_conn_recv.emit(str(self.port))
+                self.log(f'{client_addr[0]}:{client_addr[1]}', recv_data.decode(ENCODING_SOCKET))
                 recv_data = ''
             else:
                 print(f'conn close, {client_addr}')
@@ -51,7 +56,19 @@ class TCPServer:
                 del self.clients[client_addr[1]]
                 self.signal.server_conn_close.emit(str(self.port))
                 break
+        try:
+            client_socket.close()
+        except:
+            pass
+        self.log('断开连接', f'{client_addr[0]}:{client_addr[1]}')
 
     def stop(self):
         self.flag_running = False
+        temp = self.clients.copy()
+        for client in temp:
+            try:
+                temp[client].close()
+            except:
+                pass
         self.server_socket.close()
+        self.log('停止监听')

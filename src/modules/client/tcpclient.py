@@ -1,7 +1,6 @@
-import datetime
 import socket
 
-ENCODING_SET = 'gb18030'
+from Global import *
 
 
 class TCPClient:
@@ -15,6 +14,12 @@ class TCPClient:
         self.recv_log = ''
         self.name = name
 
+    def log(self, title, msg: str = None):
+        if msg == None:
+            self.signal.socket_log_add.emit(self.name, title, '')
+        else:
+            self.signal.socket_log_add.emit(self.name, title, msg)
+
     def run(self):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
@@ -22,8 +27,8 @@ class TCPClient:
         except:
             self.signal.new_msgbox_warning.emit('错误', f'连接到服务器{self.server_addr[0]}:{self.server_addr[1]}失败。')
             return -1
-        print(f'sockname {self.client_socket.getsockname()}')
         self.local_port = self.client_socket.getsockname()[1]
+        self.log('建立连接')
         self.signal.client_conn_made.emit(self.name)
         while self.flag_running:
             try:
@@ -31,13 +36,12 @@ class TCPClient:
             except:
                 break
             if recv_data:
-                time = datetime.datetime.now()
-                self.recv_log = self.recv_log + f'{time.strftime(f"[%H:%M:%S]")} [server] => {recv_data.decode(ENCODING_SET)}\n'
-                self.signal.client_conn_recv.emit(str(self.port))
+                self.log('收到数据', recv_data.decode(ENCODING_SOCKET))
                 recv_data = ''
             else:
                 self.client_socket.close()
                 break
+        self.log('断开连接')
 
     def stop(self):
         self.flag_running = False

@@ -1,55 +1,73 @@
 import json, os, time
+from Global import *
+
 
 class Template:
 
     def __init__(self):
-        self.root_path = os.path.dirname((os.path.abspath(__file__)))
-        self.template = {
-            'name': '模板',
-            'content': '',
-            'createdAt': '',
-            'lastEditAt': ''
-        }
-        self.templates = None
+        self.init = "{\"data\": []}"
+        self.template = {'name': '模板', 'content': '', 'createdAt': '', 'lastEditAt': ''}
+        self.templates = []
         self.__read()
 
     def __check_path(self):
-        if not os.path.exists(f'{self.root_path}/config'):
-            os.mkdir(f'{self.root_path}/config')
-        if not os.path.exists(f'{self.root_path}/config/template.json'):
-            f = open(f'{self.root_path}/config/template.json', 'w')
-            f.write('{}')
+        if not os.path.exists(f'{ROOT_PATH}/config'):
+            os.mkdir(f'{ROOT_PATH}/config')
+        if not os.path.exists(f'{ROOT_PATH}/config/template.json'):
+            f = open(file=f'{ROOT_PATH}/config/template.json', mode='w', encoding=ENCODING_FILE)
+            f.write(self.init)
             f.close()
-            
-    def __check_exist(self,name):
+
+    def __check_exist(self, name):
         for i in self.templates:
             if i['name'] == name:
                 return True
-        return False 
+        return False
 
     def __read(self):
         self.__check_path()
-        
-        f = open(f'{self.root_path}/config/template.json', 'r')
+
+        f = open(f'{ROOT_PATH}/config/template.json', 'r', encoding=ENCODING_FILE)
         data = f.read()
-        self.template = json.loads(data)
+        self.templates = json.loads(data)['data']
 
     def list(self):
-        return [i.name for i in self.templates]
+        return [i['name'] for i in self.templates]
 
-    def get(self, name):
-        self.template
-    
-    def set(self, name):
-        pass
+    def get(self, name) -> str:
+        for t in self.templates:
+            if t['name'] == name:
+                return t['content']
+        return ''
 
-    def delete():
-        pass 
-    
-    def save(self):
+    def set(self, name, content):
+        exist = False
+        for t in self.templates:
+            if t['name'] == name:
+                exist = True
+                t['content'] = content
+                t['lastEditAt'] = str(int(time.time()))
+                break
+        if not exist:
+            new = self.template.copy()
+            new['name'] = name
+            new['content'] = content
+            new['createdAt'] = str(int(time.time()))
+            new['lastEditAt'] = str(int(time.time()))
+            self.templates.append(new)
+        self.__save()
+
+    def delete(self, name):
+        for t in self.templates:
+            if t['name'] == name:
+                self.templates.pop(self.templates.index(t))
+                break
+        self.__save()
+
+    def __save(self):
         self.__check_path()
-        
-        data = json.dumps(self.templates)
-        f = open(f'{self.root_path}/config/template.json', 'w')
+        tmp = {'data': self.templates}
+        data = json.dumps(tmp)
+        f = open(f'{ROOT_PATH}/config/template.json', 'w', encoding=ENCODING_FILE)
         f.write(data)
         f.close()

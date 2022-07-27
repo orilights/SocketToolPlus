@@ -149,6 +149,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.text_recv = QPlainTextEdit(self.groupbox_datarecv)
         self.text_recv.setObjectName(u"text_recv")
+        self.text_recv.setReadOnly(True)
 
         self.gridLayout.addWidget(self.text_recv, 0, 0, 1, 1)
 
@@ -166,30 +167,30 @@ class Ui_MainWindow(object):
 
         self.layout_h_datasendopition = QHBoxLayout()
         self.layout_h_datasendopition.setObjectName(u"layout_h_datasendopition")
-        self.btn_send = QPushButton(self.groupbox_datasend)
-        self.btn_send.setObjectName(u"btn_send")
+        self.btn_socket_send = QPushButton(self.groupbox_datasend)
+        self.btn_socket_send.setObjectName(u"btn_socket_send")
 
-        self.layout_h_datasendopition.addWidget(self.btn_send)
+        self.layout_h_datasendopition.addWidget(self.btn_socket_send)
 
-        self.btn_templatesave = QPushButton(self.groupbox_datasend)
-        self.btn_templatesave.setObjectName(u"btn_templatesave")
+        self.btn_template_save = QPushButton(self.groupbox_datasend)
+        self.btn_template_save.setObjectName(u"btn_template_save")
 
-        self.layout_h_datasendopition.addWidget(self.btn_templatesave)
+        self.layout_h_datasendopition.addWidget(self.btn_template_save)
 
-        self.btn_templateread = QPushButton(self.groupbox_datasend)
-        self.btn_templateread.setObjectName(u"btn_templateread")
+        self.btn_template_read = QPushButton(self.groupbox_datasend)
+        self.btn_template_read.setObjectName(u"btn_template_read")
 
-        self.layout_h_datasendopition.addWidget(self.btn_templateread)
+        self.layout_h_datasendopition.addWidget(self.btn_template_read)
 
         self.btn_sendclear = QPushButton(self.groupbox_datasend)
         self.btn_sendclear.setObjectName(u"btn_sendclear")
 
         self.layout_h_datasendopition.addWidget(self.btn_sendclear)
 
-        self.btn_textformat = QPushButton(self.groupbox_datasend)
-        self.btn_textformat.setObjectName(u"btn_textformat")
+        self.btn_text_format = QPushButton(self.groupbox_datasend)
+        self.btn_text_format.setObjectName(u"btn_text_format")
 
-        self.layout_h_datasendopition.addWidget(self.btn_textformat)
+        self.layout_h_datasendopition.addWidget(self.btn_text_format)
 
 
         self.verticalLayout_2.addLayout(self.layout_h_datasendopition)
@@ -236,11 +237,11 @@ class Ui_MainWindow(object):
         self.label_v_remoteport.setText(QCoreApplication.translate("MainWindow", u"\u8fdc\u7a0b\u5730\u5740\uff1a", None))
         self.groupbox_datarecv.setTitle(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u63a5\u6536", None))
         self.groupbox_datasend.setTitle(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u53d1\u9001", None))
-        self.btn_send.setText(QCoreApplication.translate("MainWindow", u"\u53d1\u9001", None))
-        self.btn_templatesave.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u6a21\u677f", None))
-        self.btn_templateread.setText(QCoreApplication.translate("MainWindow", u"\u8bfb\u53d6\u6a21\u677f", None))
+        self.btn_socket_send.setText(QCoreApplication.translate("MainWindow", u"\u53d1\u9001", None))
+        self.btn_template_save.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u6a21\u677f", None))
+        self.btn_template_read.setText(QCoreApplication.translate("MainWindow", u"\u8bfb\u53d6\u6a21\u677f", None))
         self.btn_sendclear.setText(QCoreApplication.translate("MainWindow", u"\u6e05\u9664", None))
-        self.btn_textformat.setText(QCoreApplication.translate("MainWindow", u"\u683c\u5f0f\u5316", None))
+        self.btn_text_format.setText(QCoreApplication.translate("MainWindow", u"\u683c\u5f0f\u5316", None))
         self.menu.setTitle(QCoreApplication.translate("MainWindow", u"\u83dc\u5355", None))
     # retranslateUi
 

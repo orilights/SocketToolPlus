@@ -274,7 +274,11 @@
           </property>
           <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="0">
-            <widget class="QPlainTextEdit" name="text_recv"/>
+            <widget class="QPlainTextEdit" name="text_recv">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -291,21 +295,21 @@
            <item>
             <layout class="QHBoxLayout" name="layout_h_datasendopition">
              <item>
-              <widget class="QPushButton" name="btn_send">
+              <widget class="QPushButton" name="btn_socket_send">
                <property name="text">
                 <string>发送</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="btn_templatesave">
+              <widget class="QPushButton" name="btn_template_save">
                <property name="text">
                 <string>保存模板</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="btn_templateread">
+              <widget class="QPushButton" name="btn_template_read">
                <property name="text">
                 <string>读取模板</string>
                </property>
@@ -319,7 +323,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="btn_textformat">
+              <widget class="QPushButton" name="btn_text_format">
                <property name="text">
                 <string>格式化</string>
                </property>
