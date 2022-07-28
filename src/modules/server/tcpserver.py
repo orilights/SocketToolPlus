@@ -65,10 +65,10 @@ class TCPServer:
     def stop(self):
         self.flag_running = False
         temp = self.clients.copy()
-        for client in temp:
-            try:
+        try:
+            for client in temp:
                 temp[client].close()
-            except:
-                pass
-        self.server_socket.close()
+            self.server_socket.close()
+        except:
+            pass
         self.log('停止监听')
