@@ -31,8 +31,11 @@ class ClientMgr(dict):
     def remove_client(self, name):
         if self.get(name) is None:
             return -1
-        self.stop_client(name)
+        if self[name].isRunning():
+            self.signal.new_msgbox_warning.emit('错误', f'无法删除已建立连接的客户端。')
+            return -1
         del self[name]
+        return 0
 
 
 class ClientThread(QThread):

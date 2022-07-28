@@ -34,13 +34,19 @@ class ServerMgr(dict):
     def stop_server(self, port: int):
         if self.get(str(port)) is None:
             return -1
+        if not self[str(port)].isRunning():
+            return -1
         self[str(port)].server.stop()
 
     def remove_server(self, port: int):
         if self.get(str(port)) is None:
             return -1
-        self.stop_server(port)
+        if self[str(port)].isRunning():
+            self.signal.new_msgbox_warning.emit('错误', f'无法删除正在监听中的服务器。')
+            return -1
         del self[str(port)]
+        return 0
+
 
 
 class ServerThread(QThread):

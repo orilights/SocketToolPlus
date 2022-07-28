@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         self.sig.new_msgbox_warning.connect(self.pop_msgbox_warning)
 
         self.ui.btn_socket_create.clicked.connect(self.btnclick_socket_create)
+        self.ui.btn_socket_delete.clicked.connect(self.btnclick_socket_delete)
         self.ui.btn_socket_start.clicked.connect(self.btnclick_socket_start)
         self.ui.btn_socket_stop.clicked.connect(self.btnclick_socket_stop)
         self.ui.btn_socket_send.clicked.connect(self.btnclick_socket_send)
@@ -252,7 +253,21 @@ class MainWindow(QMainWindow):
         dialog._signal.connect(self.handle_socket_create)
 
     def btnclick_socket_delete(self):
-        ...
+        selected_items = self.ui.tree_main.selectedItems()
+        if len(selected_items) == 0:
+            QMessageBox.warning(self, '错误', '请选择要删除的Socket。', QMessageBox.Ok)
+            return -1
+        if selected_items[0].text(2) == '':
+            QMessageBox.warning(self, '错误', '请选择要删除的Socket。', QMessageBox.Ok)
+            return -1
+        if selected_items[0].parent().text(0) == 'Server':
+            if self.servers.remove_server(int(selected_items[0].text(2))) == 0:
+                self.tree_servers.removeChild(selected_items[0])
+                del self.log[selected_items[0].text(2)]
+        elif selected_items[0].parent().text(0) == 'Client':
+            if self.clients.remove_client(selected_items[0].text(2)) == 0:
+                self.tree_clients.removeChild(selected_items[0])
+                del self.log[selected_items[0].text(2)]
 
     def btnclick_socket_start(self):
         if self.current_display[0] == 0:
