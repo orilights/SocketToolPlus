@@ -314,10 +314,12 @@ class MainWindow(QMainWindow):
 
     def btnclick_template_save(self):
         dialog = Dialog_SelectTemplate(self, 1, self.ui.text_send.toPlainText())
+        dialog.setWindowModality(Qt.ApplicationModal)
         dialog.show()
 
     def btnclick_template_read(self):
         dialog = Dialog_SelectTemplate(self, 2, '')
+        dialog.setWindowModality(Qt.ApplicationModal)
         dialog.show()
         dialog._signal.connect(self.ui.text_send.setPlainText)
 
