@@ -216,6 +216,14 @@ class MainWindow(QMainWindow):
         else:
             self.clients.new_client((address, int(port)))
 
+    def handle_server_send(self, client_addr):
+        server = self.servers[self.current_display[1]]
+        self.handle_socket_log_add(self.current_display[1], f'发送数据-{client_addr}', self.ui.text_send.toPlainText())
+        try:
+            server.server.clients[client_addr].send(self.ui.text_send.toPlainText().encode(ENCODING_SOCKET))
+        except Exception as e:
+            print('send failed', e)
+
     def handle_server_info_update(self, port):
         result = self.ui.tree_main.findItems(str(port), Qt.MatchFlag.MatchExactly | Qt.MatchFlag.MatchRecursive, 2)
         if len(result) > 0:
@@ -290,13 +298,22 @@ class MainWindow(QMainWindow):
 
     def btnclick_socket_send(self):
         if self.current_display[0] == 0:
-            if not self.servers.get(self.current_display[1]).isRunning():
+            server = self.servers.get(self.current_display[1])
+            if server is None:
+                return -1
+            if not server.isRunning():
                 QMessageBox.warning(self, '错误', '服务器未在运行。', QMessageBox.Ok)
                 return -1
             if self.ui.text_send.toPlainText() == '':
                 QMessageBox.warning(self, '错误', '请输入要发发送的内容。', QMessageBox.Ok)
                 return -1
-
+            if len(server.server.clients) == 0:
+                QMessageBox.warning(self, '错误', '当前服务器未连接到任何客户端。', QMessageBox.Ok)
+                return -1
+            dialog = Dialog_SelectClient(self, server.server.clients.keys())
+            dialog.setWindowModality(Qt.ApplicationModal)
+            dialog.show()
+            dialog._signal.connect(self.handle_server_send)
         elif self.current_display[0] == 1:
             client = self.clients.get(self.current_display[1])
             if client is None:
@@ -406,11 +423,32 @@ class Dialog_CreateSocket(QDialog):
         self.close()
 
 
+class Dialog_SelectClient(QDialog):
+    _signal = Signal(str)
+
+    def __init__(self, parent, clients) -> None:
+        super().__init__(parent)
+        self.ui = Ui_Dialog_SelectClient()
+        self.ui.setupUi(self)
+
+        self.clients = clients
+
+        self.ui.btn_send.clicked.connect(self.btnclick_send)
+
+        self.ui.list_client.addItems(self.clients)
+
+    def btnclick_send(self):
+        if len(self.ui.list_client.selectedItems()) == 0:
+            return -1
+        self._signal.emit(self.ui.list_client.selectedItems()[0].text())
+        self.close()
+
+
 class Dialog_SelectTemplate(QDialog):
     _signal = Signal(str)
 
     def __init__(self, parent, mode, content) -> None:
-        super().__init__(parent)
+        super().__init__(parent, Qt.Dialog)
         self.ui = Ui_Dialog_SelectTemplate()
         self.ui.setupUi(self)
 

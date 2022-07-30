@@ -38,22 +38,22 @@ class TCPServer:
     def client_handle(self, client_socket: socket.socket, client_addr):
         self.log('建立连接', f'{client_addr[0]}:{client_addr[1]}')
         self.signal.server_conn_made.emit(str(self.port))
-        self.clients[client_addr[1]] = client_socket
+        self.clients[f'{client_addr[0]}:{client_addr[1]}'] = client_socket
         while self.flag_running:
             try:
                 recv_data = client_socket.recv(4096)
             except:
                 client_socket.close()
-                del self.clients[client_addr[1]]
+                del self.clients[f'{client_addr[0]}:{client_addr[1]}']
                 self.signal.server_conn_close.emit(str(self.port))
                 break
             if recv_data:
-                self.log(f'{client_addr[0]}:{client_addr[1]}', recv_data.decode(ENCODING_SOCKET))
+                self.log(f'收到数据-{client_addr[0]}:{client_addr[1]}', recv_data.decode(ENCODING_SOCKET))
                 recv_data = ''
             else:
                 print(f'conn close, {client_addr}')
                 client_socket.close()
-                del self.clients[client_addr[1]]
+                del self.clients[f'{client_addr[0]}:{client_addr[1]}']
                 self.signal.server_conn_close.emit(str(self.port))
                 break
         try:
