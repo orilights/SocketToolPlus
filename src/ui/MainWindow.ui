@@ -296,6 +296,9 @@
             <layout class="QHBoxLayout" name="layout_h_datasendopition">
              <item>
               <widget class="QPushButton" name="btn_socket_send">
+               <property name="toolTip">
+                <string>将发送框的信息发送到远程地址</string>
+               </property>
                <property name="text">
                 <string>发送</string>
                </property>
@@ -303,6 +306,9 @@
              </item>
              <item>
               <widget class="QPushButton" name="btn_template_save">
+               <property name="toolTip">
+                <string>保存、管理发送模板</string>
+               </property>
                <property name="text">
                 <string>保存模板</string>
                </property>
@@ -310,6 +316,9 @@
              </item>
              <item>
               <widget class="QPushButton" name="btn_template_read">
+               <property name="toolTip">
+                <string>读取、管理发送模板</string>
+               </property>
                <property name="text">
                 <string>读取模板</string>
                </property>
@@ -317,6 +326,9 @@
              </item>
              <item>
               <widget class="QPushButton" name="btn_sendclear">
+               <property name="toolTip">
+                <string>清除发送框的内容</string>
+               </property>
                <property name="text">
                 <string>清除</string>
                </property>
@@ -324,6 +336,9 @@
              </item>
              <item>
               <widget class="QPushButton" name="btn_text_format">
+               <property name="toolTip">
+                <string>格式化JSON格式的文本</string>
+               </property>
                <property name="text">
                 <string>格式化</string>
                </property>
