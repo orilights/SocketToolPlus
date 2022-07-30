@@ -206,8 +206,9 @@ class MainWindow(QMainWindow):
             self.scroll_recvtext_to_bottom()
 
     def handle_socket_log_clear(self):
-        del self.log[self.current_display[1]]
         self.ui.text_recv.clear()
+        if self.log.get(self.current_display[1]) is not None:
+            del self.log[self.current_display[1]]
 
     def handle_socket_create(self, type: int, address: str, port: str):
         if type == 0:
