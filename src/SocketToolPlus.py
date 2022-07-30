@@ -1,3 +1,4 @@
+import json
 import sys, datetime
 
 from modules.config import Settings, Template
@@ -68,6 +69,7 @@ class MainWindow(QMainWindow):
         self.ui.btn_sendclear.clicked.connect(self.ui.text_send.clear)
         self.ui.btn_template_save.clicked.connect(self.btnclick_template_save)
         self.ui.btn_template_read.clicked.connect(self.btnclick_template_read)
+        self.ui.btn_text_format.clicked.connect(self.btnclick_text_format)
         self.ui.spinbox_fontsize.valueChanged.connect(self.resize_text)
         self.ui.tree_main.currentItemChanged.connect(self.handle_tree_item_change)
 
@@ -320,7 +322,14 @@ class MainWindow(QMainWindow):
         dialog._signal.connect(self.ui.text_send.setPlainText)
 
     def btnclick_text_format(self):
-        ...
+        text = self.ui.text_send.toPlainText()
+        print(2)
+        try:
+            result = json.dumps(json.loads(text), sort_keys=True, indent=4, separators=(',', ' : '))
+        except Exception as e:
+            QMessageBox.warning(self, '错误', '当前文本不是标准JSON格式', QMessageBox.Ok)
+            return -1
+        self.ui.text_send.setPlainText(result)
 
     def act_dialog_about_open(self):
         dialog = Dialog_About(self)
