@@ -193,9 +193,10 @@ class MainWindow(QMainWindow):
             except:
                 pass
 
-    def handle_socket_log_add(self, flag, type, msg):
+    def handle_socket_log_add(self, flag, type, msg: str):
         log = self.log.get(flag, '')
         time = datetime.datetime.now().strftime(f"%H:%M:%S")
+        msg = msg.replace("\n", "\\n")
         if msg == '':
             log = log + f'[{time}] [{type}]\n'
         else:
