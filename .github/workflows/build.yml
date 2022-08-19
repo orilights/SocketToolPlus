@@ -37,10 +37,14 @@ jobs:
       - name: Copy Assets
         run:
           xcopy .\src\assets\ .\build\SocketToolPlus.dist\assets\ /s/y
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+          
+      - name: Zip Build
+        uses: TheDoctor0/zip-release@0.6.2
         with:
-          name: Windows Build
-          path: |
-            ./build/SocketToolPlus.dist
+          filename: build.win.standalone.zip
+          path: ./build/SocketToolPlus.dist/
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build.win.standalone.zip
