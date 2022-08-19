@@ -29,20 +29,10 @@ jobs:
         uses: Nuitka/Nuitka-Action@main
         with:
           script-name: src/SocketToolPlus.py
+          onefile: false
           standalone: true
           enable-plugins: pyside6
           disable-console: true
-          include-data-dir: src/assets=assets
-
-      - name: Compress Build File
-        uses: a7ul/tar-action@v1.1.0
-        id: compress
-        with:
-          command: c
-          cwd: ./
-          files: |
-            ./build
-          outPath: win.standalone.tar.gz
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
