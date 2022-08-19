@@ -39,4 +39,4 @@ jobs:
         with:
           name: Windows Build
           path: |
-            win.standalone.tar.gz
+            ./build
